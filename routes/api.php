@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\APIUsersController;
+use App\Http\Controllers\APIPekerjaan;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,17 @@ Route::group(['prefix' => 'v1'], function () {
 
 Route::post('/loginku', [APIUsersController::class, 'loginaku']);
 Route::post('/registku', 'App\Http\Controllers\APIUsersController@registaku');
+
+/*
+|--------------------------------------------------------------------------
+| Pekerjaan Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/pekerjaan/show', [APIPekerjaan::class, 'ShowPekerjaanKurir'] );
+Route::post('/pekerjaan/detail', [APIPekerjaan::class, 'ShowDetailPekerjaanKurir'] );
+Route::put('/pekerjaan/terima', [APIPekerjaan::class, 'TerimaPekerjaan'] );
+Route::put('/pekerjaan/konfirmasi', [APIPekerjaan::class, 'KonfirmasiSampai'] );
 
 // Route::post('/login', [APIUsersController::class, 'login']);
 // Route::post('/register', 'App\Http\Controllers\APIUsersController@register');
