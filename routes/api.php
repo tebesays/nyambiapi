@@ -41,6 +41,7 @@ Route::post('/registku', 'App\Http\Controllers\APIUsersController@registaku');
 |--------------------------------------------------------------------------
 */
 
+Route::post('/pekerjaan/tambah', [APIPekerjaan::class, 'AddPekerjaan'] );
 Route::post('/pekerjaan/show', [APIPekerjaan::class, 'ShowPekerjaanKurir'] );
 Route::post('/pekerjaan/detail', [APIPekerjaan::class, 'ShowDetailPekerjaanKurir'] );
 Route::put('/pekerjaan/terima', [APIPekerjaan::class, 'TerimaPekerjaan'] );

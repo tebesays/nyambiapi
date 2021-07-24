@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ModelPekerjaan;
+use App\Models\ModelKategori;
 use DB;
 use App\Quotation;
 
@@ -19,30 +20,63 @@ class APIPekerjaan extends Controller
 |--------------------------------------------------------------------------
 */
 
-	public function AddPekerjaan()
+	public function AddPekerjaan(Request $request)
 	{
-		//input pekerjaan
-		$data = new ModelUsers();
-        $data->nama = $request->input('nama');
-        $data->password = $request->input('password');
-        $data->tlp = $request->input('tlp');
-        $data->email = $request->input('email');
-        $data->status = 'NEW';
+        $berat = $request->input('berat');
+        if ($berat < 10) 
+        {
+            //input pekerjaan
+            $data = new ModelPekerjaan();
+            $data->id_user = $request->input('id_user');
+            $data->id_alamat = $request->input('id_alamat');
+            $data->id_kategori = $request->input('id_kategori');
+            
+            //Hitung total harga
+            $data2 = ModelKategori::where('id_kategori', $request->input('id_kategori'))
+            ->first();
 
-        $products = array();
-        $products['succ'] = true;
-        
-        try
-        {
-            $data->save();
+            // ger jarak berdasarkan lat lng pengirim dan penerima 
+            $jarak = $request->input('jarak');
+
+            if ($jarak > 1) {
+                $totalharga = (($jarak - 1) * $data2->Harga_selanjutnya) + $data2->Harga_awal;
+            }
+            else{
+                $totalharga = $data2->Harga_awal;
+            }
+
+            $data->harga = $totalharga;
+            $data->jarak = $jarak;
+            $data->berat = $berat;
+            $data->status = 'NEW';
+
+            $products = array();
+            $products['succ'] = true;
+            
+            try
+            {
+                $data->save();
+            }
+            catch(\Illuminate\Database\QueryException $ex)
+            {
+                $products['succ'] = 'GAGAL';
+            }
+
         }
-        catch(\Illuminate\Database\QueryException $ex)
-        {
+        else {
             $products['succ'] = false;
         }
 
         return response($products);
+		
 	}
+
+    public function ShowPekerjaanPengirim()
+    {
+
+
+
+    }
 
 	// pilih metode pembayaran
 	// menampilkan estimasi harganya 
