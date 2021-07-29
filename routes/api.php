@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\APIUsersController;
 use App\Http\Controllers\APIPekerjaan;
+use App\Http\Controllers\APIAlamat;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,17 @@ Route::post('/pekerjaan/show', [APIPekerjaan::class, 'ShowPekerjaanKurir'] );
 Route::post('/pekerjaan/detail', [APIPekerjaan::class, 'ShowDetailPekerjaanKurir'] );
 Route::put('/pekerjaan/terima', [APIPekerjaan::class, 'TerimaPekerjaan'] );
 Route::put('/pekerjaan/konfirmasi', [APIPekerjaan::class, 'KonfirmasiSampai'] );
+
+/*
+|--------------------------------------------------------------------------
+| Alamat Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/alamat/tambah', [APIAlamat::class, 'addAlamatPenerima']);
+Route::post('/alamat/cek', [APIAlamat::class, 'getAlamatPenerima']);
+
+
 
 // Route::post('/login', [APIUsersController::class, 'login']);
 // Route::post('/register', 'App\Http\Controllers\APIUsersController@register');

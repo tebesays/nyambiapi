@@ -35,8 +35,20 @@ class APIPekerjaan extends Controller
             $data2 = ModelKategori::where('id_kategori', $request->input('id_kategori'))
             ->first();
 
-            // ger jarak berdasarkan lat lng pengirim dan penerima 
+            // get jarak berdasarkan lat lng pengirim dan penerima 
+            //Get latlong penerima
+            $latlongpenerima = ModelAlamat::select()
+            ->where('id_alamat', $request->input('id_alamat'))
+            ->first();
+
+            //Get latlong pengirim
+            $latlongpengirim = 
+
             $jarak = $request->input('jarak');
+
+
+            // Get jarak berdasarkan latlong nya 
+
 
             if ($jarak > 1) {
                 $totalharga = (($jarak - 1) * $data2->Harga_selanjutnya) + $data2->Harga_awal;
@@ -52,6 +64,7 @@ class APIPekerjaan extends Controller
 
             $products = array();
             $products['succ'] = true;
+            // show jumlah yang harus dibayarkan 
             
             try
             {
@@ -73,18 +86,23 @@ class APIPekerjaan extends Controller
 
     public function ShowPekerjaanPengirim()
     {
-
+        // butuh untuk menampilkan hitory pekerjaan yang 
 
 
     }
 
-	// pilih metode pembayaran
-	// menampilkan estimasi harganya 
-	// menambahkan pekerjaan & 
-	// konfirmasi pembayaran 
-	// lihat history pekerjaan dengan statusnya
-	// lihat detail pekerjaan termasuk bukti pengiriman
-	// 
+    public function sendComplaintPekerjaan()
+    {
+
+    }
+
+    public function meeting()
+    {
+        // Masalah Alamat pengirim 
+        // masalah payment 
+        // masalah jarak yang dari api maps
+        // 
+    }
 
 
 /*
@@ -102,7 +120,7 @@ class APIPekerjaan extends Controller
         //lanjutinnya masukin cara mensort berdasarkan jarak
         $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
         ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
-        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_order','pekerjaan.status',DB::raw(" 
+        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status',DB::raw(" 
 
      ( 6371 * acos( cos( radians( ? ) ) * cos( radians( `lat_penerima` ) ) * cos( radians( `long_penerima` ) - radians( ? ) ) + sin( radians( ? ) ) * sin( radians( `lat_penerima` ) ) ) ) AS jarak
 
@@ -149,7 +167,7 @@ class APIPekerjaan extends Controller
         if ($data != null) 
         {
             $data['succ'] = true;    
-        }
+        }   
         else
         {
             $data['succ'] = false;
@@ -177,6 +195,44 @@ class APIPekerjaan extends Controller
 
         return response($products);
 	}
+
+    /*
+|--------------------------------------------------------------------------
+| ============================ API SERVICE ===============================
+|--------------------------------------------------------------------------
+*/
+
+    public function getDistancebyGoogle($latsel,$lngsel,$latbuy,$lngbuy)
+    {
+        $KeyApi = "AIzaSyDRpemH3gIcOVfZMcs08NKHihzBRxauX-s";
+
+      //Request Ke Google 
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='. $latsel .','. $lngsel .'&destinations='. $latbuy .','. $lngbuy .'&language=id&key='.$KeyApi.'',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+      ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+          echo "cURL Error #:" . $err;
+        } 
+        else 
+        {
+          return $response;
+        }
+    }
 
 
 
