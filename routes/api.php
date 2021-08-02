@@ -50,7 +50,7 @@ Route::put('/pekerjaan/konfirmasi', [APIPekerjaan::class, 'KonfirmasiSampai'] );
 
 /*
 |--------------------------------------------------------------------------
-| Pekerjaan Pengiriman Routes
+| Pekerjaan PENGIRIM Routes
 |--------------------------------------------------------------------------
 */
 Route::post('/pekerjaan/show/pengirim', [APIPekerjaan::class, 'ShowPekerjaanPengirim'] );

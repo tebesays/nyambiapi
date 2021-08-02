@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ModelPekerjaan;
 use App\Models\ModelKategori;
+use App\Models\ModelAlamat;
 use DB;
 use App\Quotation;
 
@@ -35,28 +36,32 @@ class APIPekerjaan extends Controller
             $data2 = ModelKategori::where('id_kategori', $request->input('id_kategori'))
             ->first();
 
-            // get jarak berdasarkan lat lng pengirim dan penerima 
-            //Get latlong penerima
-            $latlongpenerima = ModelAlamat::select('lat_penerima','long_penerima')
+            // Get latlong penerima
+            $penerima = ModelAlamat::select('lat_penerima','long_penerima')
             ->where('id_alamat', $request->input('id_alamat'))
             ->first();
 
-            //Get latlong pengirim, dari user 
+            //Get latlong pengirim
             $lat_pengirim = $request->input('lat_pengirim');
             $lng_pengirim = $request->input('lng_pengirim');
+            $alamat_pengirim = $request->input('alamat_pengirim');
 
-            $jarak = $request->input('jarak');
-            // Get jarak berdasarkan latlong nya 
+            //harga ongkir 
+            $datajarak = $this->getDistancebyGoogle($penerima->lat_penerima, $penerima->long_penerima, $lat_pengirim, $lng_pengirim);
+            $jarak = json_decode($datajarak)->rows[0]->elements[0]->distance->value;
 
-            if ($jarak > 1) {
-                $totalharga = (($jarak - 1) * $data2->Harga_selanjutnya) + $data2->Harga_awal;
+            $km = $jarak/1000;
+            $km = round($km, 0, PHP_ROUND_HALF_UP);
+
+            if ($km > 1) {
+                $totalharga = (($km - 1) * $data2->Harga_selanjutnya) + $data2->Harga_awal;
             }
             else{
                 $totalharga = $data2->Harga_awal;
             }
 
             $data->harga = $totalharga;
-            $data->jarak = $jarak;
+            $data->jarak = $km;
             $data->berat = $berat;
             $data->status = 'NEW';
 
@@ -70,7 +75,7 @@ class APIPekerjaan extends Controller
             }
             catch(\Illuminate\Database\QueryException $ex)
             {
-                $products['succ'] = 'GAGAL';
+                $products['succ'] = $ex;
             }
 
         }
@@ -98,7 +103,13 @@ class APIPekerjaan extends Controller
 
     public function sendComplaintPekerjaan()
     {
+        // $lat_penerima =  ;
+        // $lng_penerima = ;
+        // $lat_pengirim = ;
+        // $lng_pengirim = ;
 
+        $datajarak = $this->getDistancebyGoogle($lat_penerima, $lng_penerima, $lat_pengirim, $lng_pengirim);
+        $jarak = json_decode($datajarak)->rows[0]->elements[0]->distance->value;
     }
 
     public function meeting()
@@ -199,6 +210,11 @@ class APIPekerjaan extends Controller
 
         return response($products);
 	}
+
+    public function test()
+    {
+
+    }
 
     /*
 |--------------------------------------------------------------------------
