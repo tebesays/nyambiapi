@@ -23,7 +23,7 @@ class APIPekerjaan extends Controller
 	public function AddPekerjaan(Request $request)
 	{
         $berat = $request->input('berat');
-        if ($berat < 10) 
+        if ($berat <= 10) 
         {
             //input pekerjaan
             $data = new ModelPekerjaan();
@@ -37,18 +37,16 @@ class APIPekerjaan extends Controller
 
             // get jarak berdasarkan lat lng pengirim dan penerima 
             //Get latlong penerima
-            $latlongpenerima = ModelAlamat::select()
+            $latlongpenerima = ModelAlamat::select('lat_penerima','long_penerima')
             ->where('id_alamat', $request->input('id_alamat'))
             ->first();
 
-            //Get latlong pengirim
-            $latlongpengirim = 
+            //Get latlong pengirim, dari user 
+            $lat_pengirim = $request->input('lat_pengirim');
+            $lng_pengirim = $request->input('lng_pengirim');
 
             $jarak = $request->input('jarak');
-
-
             // Get jarak berdasarkan latlong nya 
-
 
             if ($jarak > 1) {
                 $totalharga = (($jarak - 1) * $data2->Harga_selanjutnya) + $data2->Harga_awal;
@@ -84,11 +82,18 @@ class APIPekerjaan extends Controller
 		
 	}
 
-    public function ShowPekerjaanPengirim()
+    public function ShowPekerjaanPengirim(Request $request)
     {
         // butuh untuk menampilkan hitory pekerjaan yang 
+        $id = $request->input('id_user');
+        $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
+        ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
+        ->select('alamat_penerima.alamat_penerima','alamat_penerima.nama_penerima','alamat_penerima.no_telp_penerima','kategori.nama_kategori','id_pekerjaan','pekerjaan.status')
+            ->where('pekerjaan.id_user', $id)
+            ->orderBy('pekerjaan.created_at','DESC')
+            ->get();
 
-
+        return response ($data);
     }
 
     public function sendComplaintPekerjaan()
@@ -101,7 +106,6 @@ class APIPekerjaan extends Controller
         // Masalah Alamat pengirim 
         // masalah payment 
         // masalah jarak yang dari api maps
-        // 
     }
 
 

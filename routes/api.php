@@ -38,7 +38,7 @@ Route::post('/registku', 'App\Http\Controllers\APIUsersController@registaku');
 
 /*
 |--------------------------------------------------------------------------
-| Pekerjaan Routes
+| Pekerjaan KURIR Routes
 |--------------------------------------------------------------------------
 */
 
@@ -47,6 +47,14 @@ Route::post('/pekerjaan/show', [APIPekerjaan::class, 'ShowPekerjaanKurir'] );
 Route::post('/pekerjaan/detail', [APIPekerjaan::class, 'ShowDetailPekerjaanKurir'] );
 Route::put('/pekerjaan/terima', [APIPekerjaan::class, 'TerimaPekerjaan'] );
 Route::put('/pekerjaan/konfirmasi', [APIPekerjaan::class, 'KonfirmasiSampai'] );
+
+/*
+|--------------------------------------------------------------------------
+| Pekerjaan Pengiriman Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/pekerjaan/show/pengirim', [APIPekerjaan::class, 'ShowPekerjaanPengirim'] );
+
 
 /*
 |--------------------------------------------------------------------------
