@@ -101,24 +101,6 @@ class APIPekerjaan extends Controller
         return response ($data);
     }
 
-    public function sendComplaintPekerjaan()
-    {
-        // $lat_penerima =  ;
-        // $lng_penerima = ;
-        // $lat_pengirim = ;
-        // $lng_pengirim = ;
-
-        $datajarak = $this->getDistancebyGoogle($lat_penerima, $lng_penerima, $lat_pengirim, $lng_pengirim);
-        $jarak = json_decode($datajarak)->rows[0]->elements[0]->distance->value;
-    }
-
-    public function meeting()
-    {
-        // Masalah Alamat pengirim 
-        // masalah payment 
-        // masalah jarak yang dari api maps
-    }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -211,10 +193,19 @@ class APIPekerjaan extends Controller
         return response($products);
 	}
 
-    public function test()
-    {
+    public function ShowHistoryKurir(Request $request)
+	{
+        $id = $request->input('id_user');
 
-    }
+        $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
+        ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
+        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status','jarak')
+            ->where('id_kurir', $id)
+            ->orderBy('created_at','ASC')
+            ->get();
+
+        return response ($data);
+	}
 
     /*
 |--------------------------------------------------------------------------
