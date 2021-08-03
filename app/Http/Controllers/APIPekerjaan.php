@@ -108,6 +108,7 @@ class APIPekerjaan extends Controller
 |--------------------------------------------------------------------------
 */
 
+//INI BERDASARKAN JARAK YANG TERDEKAT dari KURIR bukan Jarak yang dibayar
 	public function ShowPekerjaanKurir(Request $request)
 	{
         $lat = $request->input('lat');
@@ -117,12 +118,10 @@ class APIPekerjaan extends Controller
         //lanjutinnya masukin cara mensort berdasarkan jarak
         $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
         ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
-        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status',DB::raw(" 
-
-     ( 6371 * acos( cos( radians( ? ) ) * cos( radians( `lat_penerima` ) ) * cos( radians( `long_penerima` ) - radians( ? ) ) + sin( radians( ? ) ) * sin( radians( `lat_penerima` ) ) ) ) AS jarak
-
-             "))
-            ->where('pekerjaan.status','WAC')
+        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status', DB::raw(" 
+        ( 6371 * acos( cos( radians( ? ) ) * cos( radians( `lat_penerima` ) ) * cos( radians( `long_penerima` ) - radians( ? ) ) + sin( radians( ? ) ) * sin( radians( `lat_penerima` ) ) ) ) AS jarak
+                ")) 
+        ->where('pekerjaan.status','WAC')
             ->orderBy('jarak','ASC')
             ->addBinding($lat, 'select')
             ->addBinding($lng, 'select')
@@ -200,8 +199,8 @@ class APIPekerjaan extends Controller
         $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
         ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
         ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status','jarak')
-            ->where('id_kurir', $id)
-            ->orderBy('created_at','ASC')
+            ->where('pekerjaan.id_kurir', $id)
+            ->orderBy('pekerjaan.created_at','ASC')
             ->get();
 
         return response ($data);
