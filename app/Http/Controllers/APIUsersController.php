@@ -59,7 +59,7 @@ class APIUsersController extends Controller
     	$email = $request->input('email');
         $password = $request->input('password');
 
-        $data = User::select('name','email','id','foto','alamat','lat_pengirim','long_pengirim')
+        $data = User::select('name','email','id','foto','alamat')
         ->where('email',$email)->where('password',$password)
         ->first();
 
