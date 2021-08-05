@@ -63,6 +63,9 @@ class APIPekerjaan extends Controller
             $data->harga = $totalharga;
             $data->jarak = $km;
             $data->berat = $berat;
+            $data->lat_pengirim = $lat_pengirim;
+            $data->lng_pengirim = $lng_pengirim;
+            $data->alamat_pengirim = $alamat_pengirim;
             $data->status = 'NEW';
 
             $products = array();
@@ -118,11 +121,11 @@ class APIPekerjaan extends Controller
         //lanjutinnya masukin cara mensort berdasarkan jarak
         $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
         ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
-        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status', DB::raw(" 
-        ( 6371 * acos( cos( radians( ? ) ) * cos( radians( `lat_penerima` ) ) * cos( radians( `long_penerima` ) - radians( ? ) ) + sin( radians( ? ) ) * sin( radians( `lat_penerima` ) ) ) ) AS jarak
+        ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status','jarak', DB::raw(" 
+        ( 6371 * acos( cos( radians( ? ) ) * cos( radians( `lat_pengirim` ) ) * cos( radians( `lng_pengirim` ) - radians( ? ) ) + sin( radians( ? ) ) * sin( radians( `lat_pengirim` ) ) ) ) AS jarakkurir
                 ")) 
         ->where('pekerjaan.status','WAC')
-            ->orderBy('jarak','ASC')
+            ->orderBy('jarakkurir','ASC')
             ->addBinding($lat, 'select')
             ->addBinding($lng, 'select')
             ->addBinding($lat, 'select')
@@ -141,10 +144,18 @@ class APIPekerjaan extends Controller
 
         $data->id_kurir = $id_kurir;
         $data->status = "ITS";
-        $data->save();
 
-        $products = array();
-        $products['succ'] = true;
+        try
+            {
+                $data->save();
+
+                $products = array();
+                $products['succ'] = true;
+            }
+            catch(\Illuminate\Database\QueryException $ex)
+            {
+                $products['succ'] = false;
+            }
 
         return response($products);
 	}
@@ -156,7 +167,7 @@ class APIPekerjaan extends Controller
 
         $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
         ->join('users','pekerjaan.id_user','=','users.id')
-        ->select('users.name as nama_pengirim','users.no_telp as no_telp_pengirim','users.alamat as alamat_pengirim','lat_pengirim','long_pengirim','alamat_penerima.nama_penerima','no_telp_penerima','alamat_penerima.alamat_penerima','lat_penerima','long_penerima')
+        ->select('users.name as nama_pengirim','users.no_telp as no_telp_pengirim','users.alamat as alamat_pengirim','lat_pengirim','lng_pengirim','alamat_penerima.nama_penerima','no_telp_penerima','alamat_penerima.alamat_penerima','lat_penerima','long_penerima')
         ->where('id_pekerjaan',$id_pekerjaan)
         ->first();
 
@@ -184,10 +195,18 @@ class APIPekerjaan extends Controller
         $data->diterima_oleh = $diterima;
         $data->bukti_sampai = $bukti;
         $data->status = "ARV";
-        $data->save();
 
-        $products = array();
-        $products['succ'] = true;
+        try
+            {
+                $data->save();
+
+                $products = array();
+                $products['succ'] = true;
+            }
+            catch(\Illuminate\Database\QueryException $ex)
+            {
+                $products['succ'] = false;
+            }
 
         return response($products);
 	}
@@ -200,7 +219,7 @@ class APIPekerjaan extends Controller
         ->join('kategori', 'pekerjaan.id_kategori','=','kategori.id_kategori')
         ->select('alamat_penerima.kecamatan','kategori.nama_kategori','harga','id_pekerjaan','pekerjaan.status','jarak')
             ->where('pekerjaan.id_kurir', $id)
-            ->orderBy('pekerjaan.created_at','ASC')
+            ->orderBy('pekerjaan.created_at','DESC')
             ->get();
 
         return response ($data);
