@@ -167,7 +167,7 @@ class APIPekerjaan extends Controller
 
         $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
         ->join('users','pekerjaan.id_user','=','users.id')
-        ->select('users.name as nama_pengirim','users.no_telp as no_telp_pengirim','users.alamat as alamat_pengirim','lat_pengirim','lng_pengirim','alamat_penerima.nama_penerima','no_telp_penerima','alamat_penerima.alamat_penerima','lat_penerima','long_penerima')
+        ->select('users.name as nama_pengirim','users.no_telp as no_telp_pengirim','alamat_pengirim','lat_pengirim','lng_pengirim as long_pengirim','alamat_penerima.nama_penerima','no_telp_penerima','alamat_penerima.alamat_penerima','lat_penerima','long_penerima')
         ->where('id_pekerjaan',$id_pekerjaan)
         ->first();
 
