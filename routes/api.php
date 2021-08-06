@@ -35,13 +35,13 @@ Route::group(['prefix' => 'v1'], function () {
 
 Route::post('/loginku', [APIUsersController::class, 'loginaku']);
 Route::post('/registku', 'App\Http\Controllers\APIUsersController@registaku');
+Route::post('/saldoku', [APIUsersController::class, 'ShowSaldo']);
 
 /*
 |--------------------------------------------------------------------------
 | Pekerjaan KURIR Routes
 |--------------------------------------------------------------------------
 */
-
 Route::post('/pekerjaan/tambah', [APIPekerjaan::class, 'AddPekerjaan'] );
 Route::post('/pekerjaan/show', [APIPekerjaan::class, 'ShowPekerjaanKurir'] );
 Route::post('/pekerjaan/show/history', [APIPekerjaan::class, 'ShowHistoryKurir'] );
@@ -55,6 +55,9 @@ Route::put('/pekerjaan/konfirmasi', [APIPekerjaan::class, 'KonfirmasiSampai'] );
 |--------------------------------------------------------------------------
 */
 Route::post('/pekerjaan/show/pengirim', [APIPekerjaan::class, 'ShowPekerjaanPengirim'] );
+Route::put('/pekerjaan/konfirmasi/bayar', [APIPekerjaan::class, 'KonfirmasiPembayaran'] );
+Route::post('/pekerjaan/show/pembayaran', [APIPekerjaan::class, 'ShowPembayaran'] );
+Route::post('/pekerjaan/detail/pengirim', [APIPekerjaan::class, 'ShowDetailPekerjaanPengirim'] );
 
 
 /*

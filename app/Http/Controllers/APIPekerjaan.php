@@ -66,6 +66,7 @@ class APIPekerjaan extends Controller
             $data->lat_pengirim = $lat_pengirim;
             $data->lng_pengirim = $lng_pengirim;
             $data->alamat_pengirim = $alamat_pengirim;
+            $data->kodeunik = rand(100,300);
             $data->status = 'NEW';
 
             $products = array();
@@ -75,6 +76,7 @@ class APIPekerjaan extends Controller
             try
             {
                 $data->save();
+                $products['id_pekerjaan'] = $data->id_pekerjaan;
             }
             catch(\Illuminate\Database\QueryException $ex)
             {
@@ -90,6 +92,17 @@ class APIPekerjaan extends Controller
 		
 	}
 
+    public function ShowPembayaran(Request $request)
+    {
+        // tampilkan ID pekerjaan,jumlah yang harus dibayar,kode unik
+        $id = $request->input('id_pekerjaan');
+        $data = ModelPekerjaan::select('harga','kodeunik')
+            ->where('id_pekerjaan', $id)
+            ->first();
+        return response($data);    
+
+    }
+
     public function ShowPekerjaanPengirim(Request $request)
     {
         // butuh untuk menampilkan hitory pekerjaan yang 
@@ -103,6 +116,54 @@ class APIPekerjaan extends Controller
 
         return response ($data);
     }
+
+    public function KonfirmasiPembayaran(Request $request)
+	{
+		$id = $request->input('id_pekerjaan');
+		$bukti = $request->input('bukti_bayar');
+
+        $data = ModelPekerjaan::where('id_pekerjaan',$id)
+        ->first();
+
+        $data->bukti_bayar = $bukti;
+        $data->status = "WAA";
+
+        try
+            {
+                $data->save();
+
+                $products = array();
+                $products['succ'] = true;
+            }
+            catch(\Illuminate\Database\QueryException $ex)
+            {
+                $products['succ'] = false;
+            }
+
+        return response($products);
+	}
+
+    public function ShowDetailPekerjaanPengirim(Request $request)
+	{
+		$id_pekerjaan = $request->input('id_pekerjaan');
+
+        $data = ModelPekerjaan::join('alamat_penerima', 'pekerjaan.id_alamat', '=', 'alamat_penerima.id_alamat')
+        ->join('users','pekerjaan.id_kurir','=','users.id')
+        ->select('alamat_penerima.nama_penerima','no_telp_penerima','alamat_penerima.alamat_penerima','lat_penerima','long_penerima','bukti_sampai','diterima_oleh','users.name as nama_kurir', 'users.no_telp as notlp_kurir')
+        ->where('id_pekerjaan', $id_pekerjaan)
+        ->first();
+
+        if ($data != null) 
+        {
+            $data['succ'] = true;    
+        }   
+        else
+        {
+            $data['succ'] = false;
+        }
+        
+        return response($data);
+	}
 
 
 /*
@@ -154,7 +215,7 @@ class APIPekerjaan extends Controller
             }
             catch(\Illuminate\Database\QueryException $ex)
             {
-                $products['succ'] = false;
+                $products['succ'] = $ex;
             }
 
         return response($products);

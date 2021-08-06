@@ -75,6 +75,25 @@ class APIUsersController extends Controller
         return response($data);
     }
 
+    public function ShowSaldo(Request $request)
+    {
+        $id = $request->input('id_user');
+        $data = User::select('saldo')
+        ->where('id',$id)
+        ->first();
+
+        if ($data != null) 
+        {
+            $data['succ'] = true;    
+        }
+        else
+        {
+            $data['succ'] = false;
+        }
+        
+        return response($data);
+    }
+
     public function registaku(Request $request)
     {
     	//Rregist
