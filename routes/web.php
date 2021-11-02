@@ -16,3 +16,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/empty', function () {
+    return view('empty');
+});
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('transaction/courier', [App\Http\Controllers\TransactionController::class, 'index'])->name('courier');
+Route::get('transaction/courier/getData', [App\Http\Controllers\TransactionController::class, 'getCourier'])->name('courier.list');
+Route::get('transaction/courier/{id}', [App\Http\Controllers\TransactionController::class, 'show']);
