@@ -22,4 +22,20 @@ class ModelPekerjaan extends Model
     	'berat',
     	'status',
     ];
+
+	public function user(){
+        return $this->belongsTo('App\Models\User', 'id_user', 'id');
+    }
+
+	public function kurir(){
+        return $this->belongsTo('App\Models\ModelKurir', 'id_kurir', 'id_kurir');
+    }
+
+	public function alamat(){
+        return $this->belongsTo('App\Models\ModelAlamat', 'id_alamat', 'id_alamat');
+    }
+
+	public function kategori(){
+        return $this->belongsTo('App\Models\ModelKategori', 'id_kategori', 'id_kategori');
+    }
 }

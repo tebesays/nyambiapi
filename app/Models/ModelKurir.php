@@ -11,4 +11,8 @@ class ModelKurir extends Model
 
     protected $table = 'kurir';
     protected $primaryKey = 'id_kurir';
+
+    public function user(){
+        return $this->belongsTo('App\Models\User', 'id_user', 'id');
+    }
 }
