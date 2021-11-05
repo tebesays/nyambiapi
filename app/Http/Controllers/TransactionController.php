@@ -16,7 +16,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $data = ModelPekerjaan::get();
+        $data = ModelPekerjaan::orderBy('id_pekerjaan', 'DESC')->get();
 
         return view('transaction.courier.index', compact('data'));
     }
@@ -43,6 +43,11 @@ class TransactionController extends Controller
                                 ->make(true);
         }
 
+    }
+
+    public function worker()
+    {
+        return view('transaction.worker.index');
     }
 
     /**
@@ -101,6 +106,24 @@ class TransactionController extends Controller
     public function update(Request $request, $id)
     {
         //
+    }
+
+    public function updateWAC($id_pekerjaan)
+    {
+        $data = ModelPekerjaan::where('id_pekerjaan', $id_pekerjaan)->first();
+        $data->status = "WAC";
+        $data->save();
+
+        return redirect('transaction/courier/'.$id_pekerjaan);
+    }
+
+    public function updateFNS($id_pekerjaan)
+    {
+        $data = ModelPekerjaan::where('id_pekerjaan', $id_pekerjaan)->first();
+        $data->status = "FNS";
+        $data->save();
+
+        return redirect('transaction/courier/'.$id_pekerjaan);
     }
 
     /**

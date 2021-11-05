@@ -57,12 +57,13 @@
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <span class="d-xl-inline-block d-block mb-2"><i class="fa fa-map-marker-alt mr-2 text-primary "></i>{{ $data->lat_pengirim }} - {{ $data->lng_pengirim }} ({{ $data->jarak }} m)</span>
                                         <p>
-                                            
+                                        <h3 class="text-dark mb-1">{{ $data->alamat->nama_penerima }}</h3>
+                                        <div>{{ $data->alamat->alamat_penerima }}</div>
                                         </p>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <a href="#" class="badge badge-light mr-1">{{ $data->status }}</a>
+                                   Status: <a href="#" class="badge badge-light mr-1">{{ $data->status }}</a>
                                 </div>
                             </div>
                         </div>
@@ -147,11 +148,20 @@
                 <p class="mb-0">Courier: {{ $data->kurir->user->name }}</p>
             </div>
         </div>
+
+        <center>
+            @if($data->status == "WAA")
+            <a href="{{ url('transaction/courier/acc/'.$data->id_pekerjaan) }}" class="btn btn-rounded btn-brand">Process</a>
+            <a href="#" class="btn btn-rounded btn-danger">Cancel</a>
+            @elseif($data->status == "ARV")
+            <a href="{{ url('transaction/courier/fns/'.$data->id_pekerjaan) }}" class="btn btn-rounded btn-success">Finish</a>
+            <a href="#" class="btn btn-rounded btn-danger">Cancel</a>
+            @endif
+        </center>
     </div>
 </div>
 </div>
 
-</div>
 
 @endsection
 @section('scripts')
